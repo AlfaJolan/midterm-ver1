@@ -63,7 +63,7 @@ public class HomeController {
                           @RequestParam(name = "task_deadline", defaultValue = "0") String end,
                           @RequestParam(name = "task_description") String description,
                           @RequestParam(name = "task_id", defaultValue ="0") Integer id,
-                           @RequestParam(value = "markDone", required = false) Boolean markDone
+                           @RequestParam(value = "markDone", required = false, defaultValue = "false") Boolean markDone
                          ){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDate;
