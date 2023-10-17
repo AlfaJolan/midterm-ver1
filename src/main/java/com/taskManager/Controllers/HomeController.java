@@ -65,28 +65,5 @@ public class HomeController {
         taskRepository.save(task);
         return "redirect:/";
     }
-    /*
-    @GetMapping(value = "/")
-    public String index(Model model){
-        ArrayList<Items> items = DBmanager.getItems();
-        model.addAttribute("tovary",items);
-        return "index";
-    }
-    @GetMapping(value = "/about")
-    public String about(){
-        return "about";
-    }
-    @PostMapping(value = "/additem")
-    public String addItem(@RequestParam(name = "item_name", defaultValue = "No Item") String name,
-                          @RequestParam(name = "item_price", defaultValue = "0") int price){
-        DBmanager.addItems(new Items(null,name,price));
-        return "redirect:/";
-    }
-    @GetMapping(value = "/details/{idshka}")
-    public String details(Model model, @PathVariable(name = "idshka") Long id){
-        Items item = DBmanager.getItem(id);
-        model.addAttribute("item",item);
-        return "details";
-    }
-     */
+
 }
