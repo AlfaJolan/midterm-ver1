@@ -28,7 +28,7 @@ public class HomeController {
         return "index";
     }
     @PostMapping(value = "/addtask")
-    public String addItem(@RequestParam(name = "task_name", defaultValue = "Default") String name,
+    public String addTask(@RequestParam(name = "task_name", defaultValue = "Default") String name,
                           @RequestParam(name = "task_start", defaultValue = "0") String start,
                           @RequestParam(name = "task_deadline", defaultValue = "0") String end){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -57,6 +57,48 @@ public class HomeController {
         taskRepository.save(task);
         return "redirect:/";
     }
+    @PostMapping(value = "/savetask")
+    public String saveTask(@RequestParam(name = "task_name", defaultValue = "Default") String name,
+                          @RequestParam(name = "task_start", defaultValue = "0") String start,
+                          @RequestParam(name = "task_deadline", defaultValue = "0") String end,
+                          @RequestParam(name = "task_description") String description,
+                          @RequestParam(name = "task_id", defaultValue ="0") Integer id,
+                           @RequestParam(value = "markDone", required = false) Boolean markDone
+                         ){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate startDate;
+        LocalDate endDate;
+        if(start.equals("0"))
+        {
+            startDate = LocalDate.now();
+        }
+        else{
+            startDate  = LocalDate.parse(start, formatter);
+
+        }
+        if(end.equals("0"))
+        {
+            endDate = LocalDate.now().plusWeeks(1);
+        }
+        else{
+            endDate  = LocalDate.parse(end, formatter);
+        }
+        Task task = taskRepository.getReferenceById(id);
+        task.setName(name);
+        task.setStart(startDate);
+        task.setDeadline(endDate);
+        task.setDescription(description);
+        if(markDone){
+            task.setStatus("done");
+            taskRepository.save(task);
+            return "redirect:/";
+        }
+        else {
+            task.setStatus("active");
+            taskRepository.save(task);
+            return "redirect:/details/" + id;
+        }
+    }
     @GetMapping(value = "/done/{idshka}")
     public String addItem(Model model, @PathVariable(name = "idshka") Integer id)
     {
@@ -64,6 +106,13 @@ public class HomeController {
         task.setStatus("done");
         taskRepository.save(task);
         return "redirect:/";
+    }
+    @GetMapping(value = "/details/{idshka}")
+    public String details(Model model, @PathVariable(name = "idshka") Integer id)
+    {
+        Task task = taskRepository.getReferenceById(id);
+        model.addAttribute("task",task);
+        return "details";
     }
 
 }

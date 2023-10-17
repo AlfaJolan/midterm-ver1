@@ -61,6 +61,7 @@
                     <th>Start Date</th>
                     <th>End Date</th>
                     <th width = "10%;">Commands</th>
+                    <th width="10%">More</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -70,6 +71,7 @@
                     <td th:text = "${task.start}"></td>
                     <td th:text = "${task.deadline}"></td>
                     <td><a th:href="@{'/done/' + ${task.id}}" class = "btn btn-info btn-sm">Done</a></td>
+                    <td><a th:href = "@{'/details/' + ${task.id}}" class ="btn btn-info btn-sm">More</a></td>
                 </tr>
                 </tbody>
             </table>

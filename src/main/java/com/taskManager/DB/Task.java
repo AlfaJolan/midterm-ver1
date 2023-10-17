@@ -28,4 +28,6 @@ public class Task {
     private String status;
     private LocalDate start;
     private LocalDate deadline;
+    @Column(name = "description", length = 500)
+    private String description;
 }

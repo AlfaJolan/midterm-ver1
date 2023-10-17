@@ -33,17 +33,19 @@ public class APIController {
     record NewTaskRequest(
             String name,
             LocalDate start,
-            LocalDate end
+            LocalDate deadline,
+            String description
     ) {
 
     }
     @PostMapping
-    public void addCustomer(@RequestBody NewTaskRequest request) {
+    public void addTask(@RequestBody NewTaskRequest request) {
         Task task = new Task();
         task.setName(request.name);
         task.setStart(request.start);
-        task.setDeadline(request.end);
+        task.setDeadline(request.deadline);
         task.setStatus("active");
+        task.setDescription(request.description);
         taskRepository.save(task);
     }
 
