@@ -1,12 +1,9 @@
 package com.taskManager.Controllers;
 import com.taskManager.DB.Task;
 import com.taskManager.Repositories.TaskRepository;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -38,6 +35,16 @@ public class APIController {
     ) {
 
     }
+    record UpdateTaskRequest(
+            String name,
+            String status,
+            LocalDate start,
+            LocalDate deadline,
+            String description
+
+    ) {
+
+    }
     @PostMapping
     public void addTask(@RequestBody NewTaskRequest request) {
         Task task = new Task();
@@ -48,5 +55,19 @@ public class APIController {
         task.setDescription(request.description);
         taskRepository.save(task);
     }
-
+    @DeleteMapping("{taskId}")
+    public void deleteTask(@PathVariable("taskId") Integer id) {
+        taskRepository.deleteById(id);
+    }
+    @PutMapping("{customerId}")
+    public void updateCustomer(@PathVariable("customerId") Integer id,
+                               @RequestBody UpdateTaskRequest request){
+        Task task = taskRepository.getReferenceById(id);
+        if(request.name != null) task.setName(request.name);
+        if(request.start != null) task.setStart(request.start);
+        if(request.deadline != null) task.setDeadline(request.deadline);
+        if(request.description != null) task.setDescription(request.description);
+        if(request.status != null) task.setStatus(request.status);
+        taskRepository.save(task);
+    }
 }
