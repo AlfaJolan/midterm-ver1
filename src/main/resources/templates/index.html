@@ -1,83 +1,164 @@
-<html xmlns:th = "http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Task Manager</title>
     <link rel="stylesheet" th:href="@{'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css'}">
     <script th:src="@{'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js'}"></script>
+    <script th:src="@{'https://code.jquery.com/jquery-3.6.0.min.js'}"></script>
+
 </head>
 <body>
-<header>
-
-</header>
-<nav class = "navbar navbar-expand-md navbar-light pt-5 pb-4">
+<header></header>
+<nav class="navbar navbar-expand-md navbar-light pt-5 pb-4">
     <div class="container">
-        <!--navbar title-->
-        <a class ="navbar-brand" href = "#intro">
-              <span class="text-primary fw-bold">
-                  Task Manager
-              </span>
+        <!-- Navbar title -->
+        <a class="navbar-brand" href="#intro">
+            <span class="text-primary fw-bold">Task Manager</span>
         </a>
     </div>
 </nav>
-<div class = "container">
-    <div class ="row mt-5">
-        <div class ="col-6 offset-3">
-
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-6 offset-3">
             <form th:action="@{'/addtask'}" method="post">
-                <div class = "form-group">
+                <div class="form-group">
                     <label>
-                        NAME :
+                        NAME:
                     </label>
-                    <input type = "text" class = "form-control" name = task_name>
+                    <input type="text" class="form-control" name="task_name">
                 </div>
-                <div class = "form-group">
+                <div class="form-group">
                     <label>
                         START DATE:
                     </label>
-                    <input type = "date" class = "form-control" name = task_start>
+                    <input type="date" class="form-control" name="task_start">
                 </div>
-                <div class = "form-group">
+                <div class="form-group">
                     <label>
                         END DATE:
                     </label>
-                    <input type = "date" class = "form-control" name = task_deadline>
+                    <input type="date" class="form-control" name="task_deadline">
                 </div>
-
-                <div class = "form-group">
+                <div class="form-group">
                     <br>
-                    <button class = "btn btn-success">ADD ITEM</button>
+                    <button class="btn btn-success">ADD ITEM</button>
                 </div>
             </form>
         </div>
     </div>
-    <div class = "row mt-5">
-        <div class = "col-12">
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Task List</h3>
 
-            <table class = "table table-stripped">
+            <div class="btn-group" role="group" aria-label="Task View">
+                <button id="showIncomplete" type="button" class="btn btn-primary active">Show Incomplete Tasks</button>
+                <button id="showCompleted" type="button" class="btn btn-primary">Show Completed Tasks</button>
+            </div>
+
+            <table id="incompleteTasks" class="table table-striped">
                 <thead>
                 <tr>
                     <th>ID</th>
                     <th>NAME</th>
                     <th>Start Date</th>
                     <th>End Date</th>
-                    <th width = "10%;">Commands</th>
+                    <th width="10%;">Commands</th>
                     <th width="10%">More</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each = "task : ${tasks}">
-                    <td th:text = "${task.id}"></td>
-                    <td th:text = "${task.name}"></td>
-                    <td th:text = "${task.start}"></td>
-                    <td th:text = "${task.deadline}"></td>
-                    <td><a th:href="@{'/done/' + ${task.id}}" class = "btn btn-info btn-sm">Done</a></td>
-                    <td><a th:href = "@{'/details/' + ${task.id}}" class ="btn btn-info btn-sm">More</a></td>
+                <tr th:each="task : ${tasks}">
+                    <td th:text="${task.id}"></td>
+                    <td th:text="${task.name}"></td>
+                    <td th:text="${task.start}"></td>
+                    <td th:text="${task.deadline}"></td>
+                    <td><a th:href="@{'/done/' + ${task.id}}" class="btn btn-info btn-sm">Done</a></td>
+                    <td><a th:href="@{'/details/' + ${task.id}}" class="btn btn-info btn-sm">More</a></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <table id="completedTasks" class="table table-striped" style="display: none;">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th width = "10%">Commands</th>
+                    <th width ="10%">More</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="completedTask : ${completedTasks}">
+                    <td th:text="${completedTask.id}"></td>
+                    <td th:text="${completedTask.name}"></td>
+                    <td th:text="${completedTask.start}"></td>
+                    <td th:text="${completedTask.deadline}"></td>
+                    <td><a th:href="@{'/delete/' + ${completedTask.id}}" class="btn btn-info btn-sm">Delete</a></td>
+                    <td><a th:href="@{'/details/' + ${completedTask.id}}" class="btn btn-info btn-sm">More</a></td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
-</div >
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const showIncompleteButton = document.getElementById('showIncomplete');
+        const showCompletedButton = document.getElementById('showCompleted');
+        const incompleteTable = document.getElementById('incompleteTasks');
+        const completedTable = document.getElementById('completedTasks');
+
+        function showIncompleteTasks() {
+            incompleteTable.style.display = 'table';
+            completedTable.style.display = 'none';
+            showIncompleteButton.classList.add('active');
+            showCompletedButton.classList.remove('active');
+        }
+
+        function showCompletedTasks() {
+            incompleteTable.style.display = 'none';
+            completedTable.style.display = 'table';
+            showIncompleteButton.classList.remove('active');
+            showCompletedButton.classList.add('active');
+        }
+
+        showIncompleteButton.addEventListener('click', () => {
+            showIncompleteTasks();
+            // Update the URL hash
+            window.location.hash = 'active';
+        });
+
+        showCompletedButton.addEventListener('click', () => {
+            showCompletedTasks();
+            // Update the URL hash
+            window.location.hash = 'done';
+        });
+
+        // Function to toggle visibility based on the URL hash
+        function toggleTaskTableBasedOnHash() {
+            const hash = window.location.hash;
+            if (hash === '#done') {
+                showCompletedTasks();
+            } else {
+                showIncompleteTasks();
+            }
+        }
+
+        // Listen for changes to the URL hash
+        window.addEventListener('hashchange', toggleTaskTableBasedOnHash);
+
+        // Check if the URL hash is empty and set it to #active by default
+        if (!window.location.hash) {
+            window.location.hash = 'active';
+        }
+
+        // Initial setup based on the current URL hash
+        toggleTaskTableBasedOnHash();
+    });
+</script>
 
 </body>
 </html>

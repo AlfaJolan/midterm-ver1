@@ -3,10 +3,7 @@ import com.taskManager.DB.Task;
 import com.taskManager.Repositories.TaskRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -23,8 +20,10 @@ public class HomeController {
 
     @GetMapping(value = "/")
     public String index(Model model){
-        List<Task> tasks = taskRepository.findAllByStatus("active");
-        model.addAttribute("tasks", tasks);
+        List<Task> activeTasks = taskRepository.findAllByStatus("active");
+        model.addAttribute("tasks", activeTasks);
+        List<Task> doneTasks = taskRepository.findAllByStatus("done");
+        model.addAttribute("completedTasks", doneTasks);
         return "index";
     }
     @PostMapping(value = "/addtask")
@@ -106,6 +105,13 @@ public class HomeController {
         task.setStatus("done");
         taskRepository.save(task);
         return "redirect:/";
+    }
+    @GetMapping(value = "/delete/{idshka}")
+    public String deleteItem(Model model, @PathVariable(name = "idshka") Integer id)
+    {
+        Task task = taskRepository.getReferenceById(id);
+        taskRepository.delete(task);
+        return "redirect:/#done";
     }
     @GetMapping(value = "/details/{idshka}")
     public String details(Model model, @PathVariable(name = "idshka") Integer id)
